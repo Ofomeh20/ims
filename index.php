@@ -1,34 +1,77 @@
-<?php 
-session_start();
-include 'db_connect.php';
+<?php
+   session_start();
+   include "db_connect.php";
 
+   $stmt=$conn->prepare("SELECT * FROM users WHERE user_id=?");
+   $stmt->bind_param('s',$_SESSION['user_id']);
+   $stmt->execute();
 
- echo"<h1>Welcome to the library, ";
-  if(isset($_SESSION['username'])){
-echo $_SESSION['username'];
-  }else{
-    echo "Guest, please sign up ";
-  }
-   echo"!</h1>";
- 
-   $result = $conn->query("SELECT * FROM books");
+   $result1 = $stmt->get_result();
+   $row= $result1->fetch_assoc();
 
- echo "<table border='1' cellpadding='10'>";
- echo "<tr><th>ID </th>
-            <th> Title <th>ss
-            <th> Author </th>
-              <th> action </th>
-         </tr>";
+   $stmt = $conn->prepare("SELECT * FROM books");
+   $stmt->execute();
 
-  while($book = $result->fetch_assoc()){
-    echo "<tr>";
-    echo "<td>{$book['id']}</td>";
-    echo "<td>{$book['title']}</td>";
-    echo "<td>{$book['author']}</td>";
-    echo "<td><a href='library.php'>GO TO LIBRARY </a></td>";
-    echo"<td> <a href='logout.php'><button>logout </button><a></td>";
-    echo "</tr>";
-  }   
-  echo"</table>";
-   
-  ?>    
+   $result2 =$stmt->get_result();
+
+?>
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title> library</title>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="bootstrap.css">
+    <link rel="stylesheet" href="bootstrap.min.css">
+    <link rel="stylesheet" href="index.css">
+</head>
+<body class="p-5">
+    <h1> WELCOME  TO BJ LIBRARY </h1>
+    <hr>
+    <a href="create.php">Add New Book</a>
+
+    <?php if($result2->num_rows != 0): ?>
+    <table border="1" cellpadding="10">
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Author</th>
+            <th>Description</th>
+            <th>Actions</th>
+        </tr>
+        <?php while($books = $result2->fetch_assoc()): ?>
+            <tr>
+                <td><?php echo $books['id']; ?></td>
+                <td><?php echo $books['title']; ?></td>
+                <td><?php echo $books['author']; ?></td>
+                <td><?php echo $books['description']; ?></td>
+                <td>
+
+                  <?php if($books['borrowed'] != "true"): ?>
+                    <a href="<?php echo "borrow.php?id={$books['id']}"; ?>">
+                      Borrow
+                    </a>
+                  <?php endif;?>
+
+                  <?php if($books['borrowed'] == "true" && $books['borrower'] != $_SESSION['user_id']): ?>
+                      Borrowed
+                  <?php endif;?>
+
+                  <?php 
+                    if($books['borrowed'] == "true" && $books['borrower'] == $_SESSION['user_id']): ?>
+                    <a href="<?php echo "return.php?id={$books['id']}"; ?>">
+                      Return
+                    </a>
+                  <?php endif;?>
+
+                </td>
+            </tr>
+
+        <?php endwhile; ?>
+        </table>
+        <?php endif; 
+            if ($result2->num_rows == 0) {
+                echo "<h3>There are no available books</h3>";
+            }
+        ?>
+</body>
+</html>

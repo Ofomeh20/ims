@@ -5,8 +5,6 @@
 session_start();
 include 'db_connect.php';
 
-$_SESSION['user_id'] = null;
-$_SESSION['username'] = null;
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = $_POST['email'];
     $password = $_POST['password'];
@@ -22,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($row && password_verify($password, $row['password'])) {
         $_SESSION['user_id'] = $row['email'].$row['password'];
         $_SESSION['username'] = $row['username'];
-        header("Location: index.php");
+        header("Location: library.php");
         exit();
     } else {
         $error_message = "Invalid credentials!";

@@ -8,8 +8,6 @@
   use PHPMailer\PHPMailer\PHPMailer;
   use PHPMailer\PHPMailer\Exception;
 
-  $_SESSION['user_id'] = null;
-  $_SESSION['username'] = null;
   include 'db_connect.php';
   if ($_SERVER['REQUEST_METHOD'] == 'POST'){
     $username = $_POST['username'];
@@ -59,14 +57,14 @@
                 $mail->Body = "Your account has successfully been created! Welcome to J&B library";
 
                 $mail->send();
-                header('Location: index.php'); // Redirect to OTP verification page
+                header('Location: library.php'); // Redirect to OTP verification page
                 exit();
             } catch (Exception $e) {
                 // $errors[] = "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
                 $errors[] = "Message could not be sent.Try again";
                 var_dump($errors);
                 // Redirect to the edit profile page either way
-                header('Location: index.php');
+                header('Location: library.php');
                 exit();
             }
         }else{
