@@ -9,6 +9,7 @@
   use PHPMailer\PHPMailer\Exception;
 
   $_SESSION['user_id'] = null;
+  $_SESSION['username'] = null;
   include 'db_connect.php';
   if ($_SERVER['REQUEST_METHOD'] == 'POST'){
     $username = $_POST['username'];
@@ -33,6 +34,7 @@
     if ($password === $cnfm_password){
       if($alrd_exists == false){
         $password_hash = password_hash($password, PASSWORD_DEFAULT);
+        $_SESSION['username'] = $username;
         $_SESSION['user_id'] = $email.$password_hash;
         $stmt = $conn->prepare("INSERT INTO users (username, email, password, user_id) VALUES (?,?,?,?)");
         $stmt->bind_param("ssss", $username, $email, $password_hash, $_SESSION['user_id']);
