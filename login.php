@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $error_message = "Invalid credentials!";
     }
     
-    $stmt->close();
+    $conn->close();
 }
 
 

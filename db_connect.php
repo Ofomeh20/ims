@@ -32,7 +32,9 @@ if(session_status() === PHP_SESSION_NONE) {
         author VARCHAR(255),
         description VARCHAR(255),
         borrowed VARCHAR(50),
-        borrower  VARCHAR(255)
+        borrower  VARCHAR(255),
+        time_limit VARCHAR(255),
+        email_sent VARCHAR(50)
   )";
   $conn->query($profile_table);
 

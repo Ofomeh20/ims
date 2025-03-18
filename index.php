@@ -1,6 +1,7 @@
 <?php
    session_start();
    include "db_connect.php";
+   // include 'sendSMTP.php';
 
    $stmt=$conn->prepare("SELECT * FROM users WHERE user_id=?");
    $stmt->bind_param('s',$_SESSION['user_id']);
