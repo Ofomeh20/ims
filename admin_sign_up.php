@@ -3,6 +3,8 @@
   session_start();
   include 'handleSMTPs.php';
   include 'db_connect.php';
+
+
   if ($_SERVER['REQUEST_METHOD'] == 'POST'){
     $username = $_POST['username'];
     $email = $_POST['email'];
@@ -27,14 +29,17 @@
       if($alrd_exists == false){
         $password_hash = password_hash($password, PASSWORD_DEFAULT);
         $user_id = $email.$password_hash;
-        $stmt = $conn->prepare("INSERT INTO pending_accounts (username, email, password, user_id) VALUES (?,?,?,?)");
-        $stmt->bind_param("ssss", $username, $email, $password_hash, $user_id);
+        $role = "admin";
+        $status = "running";
+
+        $stmt = $conn->prepare("INSERT INTO users (username, email, password, user_id, role, status) VALUES (?,?,?,?,?,?)");
+        $stmt->bind_param("ssssss", $username, $email, $password_hash, $user_id, $role, $status);
 
 
         if ($stmt->execute()){
             $sub = "Account creation";
-            $cntnt = "Your account is being checked by the admin. Please wait for some time.";
-            $red = "login.php";
+            $cntnt = "Your account has been created as an admin. Welcome to BJ library $username";
+            $red = "admin_dash.php";
             email($email, $sub, $cntnt, $red);
         }else{
           $_SESSION['user_id'] = null;

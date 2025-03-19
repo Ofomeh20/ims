@@ -20,8 +20,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($row && password_verify($password, $row['password'])) {
         $_SESSION['user_id'] = $row['email'].$row['password'];
         $_SESSION['username'] = $row['username'];
-        header("Location: library.php");
-        exit();
+        $_SESSION['role'] = $row['role'];
+
+        if ($row['role'] == "admin") {
+          header('Location: admin_dash.php');
+          exit();
+        } else {
+          header('Location: index.php');
+          exit();
+        }
+        
     } else {
         $error_message = "Invalid credentials!";
     }
@@ -37,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <!DOCTYPE html>
 <html>
   <head>
-    <title>LOGIN_INFO</title>
+    <title>Login to LMS</title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale= 1.0" />
     <!--BOOTSTRAP CDN-->
@@ -94,7 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
           <br />
           <button type="submit" class="btn btn-primary w-100 mx-auto"> Login </button>
-          <a href="#" class="text-decoration-none my-2">Forgot password?</a>
+          <a href="signup.php" class="text-decoration-none my-2">Don't have an account? Sign up!</a>
 
 
         </form>
