@@ -50,6 +50,7 @@ if(session_status() === PHP_SESSION_NONE) {
       book VARCHAR(50) NOT NULL,
       author VARCHAR(50) NOT NULL,
       price INT NOT NULL,
+      account_no INT NOT NULL,
       user_id VARCHAR(255) NOT NULL
 )";
   $conn->query($pending_requests_query);
@@ -76,8 +77,8 @@ if(session_status() === PHP_SESSION_NONE) {
         title VARCHAR(255),
         author VARCHAR(255),
         borrower VARCHAR(255),
-        time_borrowed VARCHAR(255),
-        due_date VARCHAR(255),
+        time_borrowed INT,
+        due_date INT,
         email_sent VARCHAR(50)
   )";
   $conn->query($borrowed_books_table);
