@@ -41,6 +41,19 @@ if(session_status() === PHP_SESSION_NONE) {
 
 
 
+    // Creates the user table
+    $pending_suspended_query = "
+    CREATE TABLE IF NOT EXISTS pending_reactivation_requests (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          username VARCHAR(255) NOT NULL,
+          email VARCHAR(255) NOT NULL,
+          user_id VARCHAR(255) NOT NULL,
+          account_no INT(10)
+          )";
+    $conn->query($pending_suspended_query);
+
+
+
       // Creates the user table
   $pending_requests_query = "
   CREATE TABLE IF NOT EXISTS pending_requests (

@@ -14,7 +14,7 @@
 
     $time = new DateTime();
     $time_borrowed = $time->getTimestamp();
-    $time->modify("+5 minutes");
+    $time->modify("+1 minutes");
     $due_date = $time->getTimestamp();
     $sent = "false";
     $borr = "true";

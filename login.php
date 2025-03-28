@@ -21,6 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_SESSION['user_id'] = $row['email'].$row['password'];
         $_SESSION['username'] = $row['username'];
         $_SESSION['role'] = $row['role'];
+        $_SESSION['status'] = $row['status'];
 
         if ($row['role'] == "admin") {
           header('Location: admin_dash.php');

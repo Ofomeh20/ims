@@ -38,6 +38,10 @@
     $stmt->execute();
     $result3 =$stmt->get_result();
 
+    $stmt = $conn->prepare("SELECT * FROM pending_reactivation_requests");
+    $stmt->execute();
+    $result4 = $stmt->get_result();
+
 ?>
 
 
@@ -55,8 +59,25 @@
         <link rel="stylesheet" href="index.css">
     </head>
     <body class="container py-5">
-        <h1 class="text-center text-primary mb-4">WELCOME TO BJ LIBRARY, <?php echo $_SESSION['username']; ?></h1>
-        <hr>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">BJ Library</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="logout.php">Log out</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+        <h6 class="text-center text-primary mt-1">WELCOME TO BJ LIBRARY, <?php echo $_SESSION['username']; ?></h6>
 
         <!-- Pending Borrow Requests -->
         <section class="mb-5">
@@ -72,6 +93,7 @@
                             <th>Book</th>
                             <th>Author</th>
                             <th>Price</th>
+                            <th>Account no</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -84,6 +106,7 @@
                             <td><?php echo $req['book']; ?></td>
                             <td><?php echo $req['author']; ?></td>
                             <td><?php echo $req['price']; ?></td>
+                            <td><?php echo $req['account_no']; ?></td>
                             <td>
                                 <a href="accept.php?user=<?php echo $req['user_id'].'&book='. $req['book']; ?>" class="btn btn-success btn-sm">Approve</a>
                                 <a href="reject.php?user=<?php echo $req['user_id'].'&book='. $req['book']; ?>" class="btn btn-danger btn-sm">Disapprove</a>
@@ -97,6 +120,48 @@
                 <h5 class="text-warning">There are no pending borrow requests.</h5>
             <?php endif; ?>
         </section>
+
+
+
+
+
+        <!-- Pending reactivation Requests -->
+        <section class="mb-5">
+            <h3 class="text-secondary">Pending reactivation Requests</h3>
+            <?php if($result4->num_rows != 0): ?>
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Account no</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php while($req = $result4->fetch_assoc()): ?>
+                        <tr>
+                            <td><?php echo $i+1; ?></td>
+                            <td><?php echo $req['username']; ?></td>
+                            <td><?php echo $req['email']; ?></td>
+                            <td><?php echo $req['account_no']; ?></td>
+                            <td>
+                                <a href="reactivate.php?user=<?php echo $req['user_id']; ?>" class="btn btn-success btn-sm">Reactivate User</a>
+                            </td>
+                        </tr>
+                        <?php endwhile; ?>
+                    </tbody>
+                </table>
+            </div>
+            <?php else: ?>
+                <h5 class="text-warning">There are no pending reactivation requests.</h5>
+            <?php endif; ?>
+        </section>
+
+
+
 
         <!-- Pending Account Requests -->
         <section class="mb-5">
@@ -153,7 +218,11 @@
                             <td><?php echo $user['username']; ?></td>
                             <td><?php echo $user['email']; ?></td>
                             <td>
-                                <a href="#" class="btn btn-warning btn-sm">Suspend</a>
+                                <?php if ($user['status'] != "suspended"): ?>
+                                <a href="suspend.php?user=<?php echo $user['user_id']; ?>" class="btn btn-warning btn-sm">Suspend User</a>
+                                <?php else: ?>
+                                <a href="reactivate.php?user=<?php echo $user['user_id']; ?>" class="btn btn-success btn-sm">Reactivate User</a>
+                                <?php endif ?>
                                 <a href="#" class="btn btn-danger btn-sm">Delete</a>
                             </td>
                         </tr>
@@ -245,8 +314,22 @@
                                 $time->setTimestamp($book['due_date']);
                                 echo $time->format("d-m-Y H:i:s");
                             ?></td>
+                            
+                            
                             <td>
-                                <a href="suspend.php?user=<?php echo $book['borrower']; ?>" class="btn btn-danger btn-sm">Suspend User</a>
+                                <?php 
+                                    $stmt = $conn->prepare("SELECT * FROM users WHERE user_id=?");
+                                    $stmt->bind_param("s", $book['borrower']);
+                                    $stmt->execute();
+                                    $r= $stmt->get_result();
+                                    $susp = $r->fetch_assoc();
+                                ?>
+
+                                <?php if ($susp['status'] != "suspended"): ?>
+                                <a href="suspend.php?user=<?php echo $book['borrower']; ?>" class="btn btn-warning btn-sm">Suspend User</a>
+                                <?php else: ?>
+                                <a href="reactivate.php?user=<?php echo $book['borrower']; ?>" class="btn btn-success btn-sm">Reactivate User</a>
+                                <?php endif ?>
                             </td>
                         </tr>
                         <?php endwhile; ?>
